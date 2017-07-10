@@ -12,7 +12,7 @@ string0=pr_Amon
 OUTPUT_PATH=/home/mavilia/MAGIC/
 
 # CLUStool directory
-CLUSTOOL_PATH=/home/mavilia/MAGIC/src/
+CLUSTOOL_PATH=/home/mavilia/MAGIC/EnsClus/
 #-------------------------------about data-------------------------------------------
 # Write only letters or numbers, no punctuation marks!
 # If you want to leave the field empty write 'no' 
@@ -38,7 +38,10 @@ numpcs=no               #number of PCs
 name_outputs="${varname}_${model}_${numens}ens_${season}_${area}_${kind}"
 
 ##PRECOMPUTATION 
-python ${CLUSTOOL_PATH}CLUSpackage/ensemble_anomalies.py "$INPUT_PATH0" "$OUTPUT_PATH" "$CLUSTOOL_PATH" "$name_outputs" "$varunits" "$string0" "$extreme"
+#python ${CLUSTOOL_PATH}CLUSpackage/ensemble_anomalies.py "$INPUT_PATH0" "$OUTPUT_PATH" "$CLUSTOOL_PATH" "$name_outputs" "$varunits" "$string0" "$extreme"
 
 ##ENSEMBLE EOF and K-MEANS
-#python ${CLUSTOOL_PATH}ensembleEOFandKMEANS.py "$CLUSTOOL_PATH" "$name_outputs" "$varunits" "$numpcs" "$perc" "$numclus"
+python ${CLUSTOOL_PATH}CLUSpackage/ensembleEOFandKMEANS.py "$OUTPUT_PATH" "$CLUSTOOL_PATH" "$name_outputs" "$varunits" "$numpcs" "$perc" "$numclus"
+
+ls -lrt ../OUTPUT
+

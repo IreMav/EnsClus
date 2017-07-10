@@ -9,7 +9,6 @@ import os
 
 def ensemble_anomaly(dir_DATA,dir_OUTPUT,dir_PYtool,name_outputs,varunits,string,extreme):
     '''
-    
     '''
     #____________Reading the netCDF file of 3Dfield, for all the ensemble members
     fn = [i for i in os.listdir(dir_DATA) \
@@ -120,8 +119,8 @@ if __name__ == '__main__':
     
     # User-defined libraries
     sys.path.insert(0,dir_PYtool+'CLUSpackage/')
-    from subpackage.readNetCDF import read3Dncfield, save_N_2Dfields
-    from subpackage.sel_SeasonArea import sel_season, sel_area
+    from readNetCDF import read3Dncfield, save_N_2Dfields
+    from sel_SeasonArea import sel_season, sel_area
     
     # OUTPUT DIRECTORY
     OUTPUTdir=dir_OUTPUT+'OUTPUT/'
