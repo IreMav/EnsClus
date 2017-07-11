@@ -21,8 +21,8 @@ dir_CLUStool='/home/mavilia/MAGIC/EnsClus/clus/'
 
 # User-defined packages
 sys.path.insert(0,dir_CLUStool)
-import ens_anom
-import ens_eof_kmeans
+from ens_anom import ens_anom
+from ens_of_kmeans import ens_eof_kmeans
 
 #-------------------------------about data-------------------------------------------
 # Write only letters or numbers, no punctuation marks!
@@ -30,6 +30,8 @@ import ens_eof_kmeans
 varname='pr'                #variable name in the file
 varunits="kg m-2 s-1"       #variable units (K, 'kg m-2 s-1')
 model='ECEARTH31'           #model name ECEARTH31 NCEPNCAR ERAInterim
+
+
 numens=60                   #total number of ensemble members
 season='JJA'                #seasonal average
 area='Eu'                   #regional average (examples:'EAT':Euro-Atlantic
@@ -62,11 +64,11 @@ for i in filenames:
 
 ####################### PRECOMPUTATION #######################
 #____________run ens_anom as a module
-ens_anom.ens_anom(filenames,dir_OUTPUT,dir_CLUStool,name_outputs,varunits,string,extreme)
+ens_anom(filenames,dir_OUTPUT,dir_CLUStool,name_outputs,varunits,string,extreme)
 
 
 ####################### EOF AND K-MEANS ANALYSES #######################
 #____________run ens_anom as a module
-ens_eof_kmeans.ens_eof_kmeans(dir_OUTPUT,dir_CLUStool,name_outputs,varunits,numpcs,perc,numclus)
+ens_eof_kmeans(dir_OUTPUT,dir_CLUStool,name_outputs,varunits,numpcs,perc,numclus)
 
 
