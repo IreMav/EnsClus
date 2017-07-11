@@ -65,19 +65,8 @@ def ens_eof_kmeans(dir_OUTPUT,dir_CLUStool,name_outputs,varunits,numpcs,perc,num
     print('____________________________________________________________________________________________________________________')
     print('EOF analysis')
     #----------------------------------------------------------------------------------------
-    neof=0   # EOF to plot (neof starts from zero!)
-    tit='{0} {1}'.format(varname,model)
-    solver, pcs_scal1, eofs_scal2, pcs_unscal0, eofs_unscal0, varfrac, figPC, figEOF = eof_computation(neof,var,varunits,lat,lon,tit,numens)
-    
-    # plot the PCs
-    namef=os.path.join(OUTPUTdir,'PCs{0}_{1}.eps'.format(neof+1,name_outputs))
-    figPC.savefig(namef)#bbox_inches='tight')
-    # plot the EOFs
-    namef=os.path.join(OUTPUTdir,'EOFs{0}_{1}.eps'.format(neof+1,name_outputs))
-    figEOF.savefig(namef)#bbox_inches='tight')
-    print('PCs and EOFs eps figure are saved in {0}'.format(OUTPUTdir))
-    print('____________________________________________________________________________________________________________________')
-    
+    solver, pcs_scal1, eofs_scal2, pcs_unscal0, eofs_unscal0, varfrac = eof_computation(var,varunits,lat,lon)
+        
     acc=np.cumsum(varfrac*100)
     if perc!='no':
         # Find how many PCs explain a certain percentage of variance
@@ -89,7 +78,7 @@ def ens_eof_kmeans(dir_OUTPUT,dir_CLUStool,name_outputs,varunits,numpcs,perc,num
         exctperc=acc[numpcs-1]
     print('(the first {0} PCs explain exactly the {1}% of variance)'.format(numpcs,"%.2f" %exctperc))
     
-    
+
     #____________Compute k-means analysis using a subset of PCs
     print('____________________________________________________________________________________________________________________')
     print('k-means analysis using a subset of PCs')

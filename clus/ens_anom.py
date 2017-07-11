@@ -38,14 +38,12 @@ def ens_anom(filenames,dir_OUTPUT,dir_CLUStool,name_outputs,varunits,string,extr
     var_ens=[]
     for ens in range(numens):
         ifile=filenames[ens]
-        print('\n/////////////////////////////////////\nENSEMBLE MEMBER %s' %ens)
+        print('ENSEMBLE MEMBER %s' %ens)
         var, lat, lon, dates, time_units = read3Dncfield(ifile)
     
         #____________Convertion from kg m-2 s-1 to mm/day
         if varunits=='kg m-2 s-1':
             var=var*86400  #there are 86400 seconds in a day
-            print('____________________________________________________________________________________________________________________')
-            print('Precipitation rate units are converted from kg m-2 s-1 to mm/day')
             varunitsnew='mm/day'
         else:
             varunitsnew=varunits
@@ -57,6 +55,10 @@ def ens_anom(filenames,dir_OUTPUT,dir_CLUStool,name_outputs,varunits,string,extr
         var_area,lat_area,lon_area=sel_area(lat,lon,var_season,area)
         
         var_ens.append(var_area)
+    
+    if varunits=='kg m-2 s-1':
+        print('____________________________________________________________________________________________________________________')
+        print('Precipitation rate units are converted from kg m-2 s-1 to mm/day')
     
     print('\n----------------------------------------')
     print('Original var shape: (time x lat x lon)={0}'.format(var.shape))

@@ -17,7 +17,7 @@ warnings.simplefilter('ignore', MatplotlibDeprecationWarning)
 
 #////////////////////////////////////////////////////////////////////////////////////////////////
 #____________FUNCTION 1: Computing the EOFs and PCs
-def eof_computation(neof,var,varunits,lat,lon,tit,numens):
+def eof_computation(var,varunits,lat,lon):
     #----------------------------------------------------------------------------------------
     print('____________________________________________________________________________________________________________________')
     print('Computing the EOFs and PCs')
@@ -43,10 +43,24 @@ def eof_computation(neof,var,varunits,lat,lon,tit,numens):
     #------------------------------------------EOFs unscaled  (case 0 of scaling)
     eofs_unscal0 = solver.eofs()
 
-    # Plot the PC scaled (divided by the square-root of their eigenvalues) in the selected domain
     #------------------------------------------PCs scaled  (case 1 of scaling)
     pcs_scal1 = solver.pcs(pcscaling=1)
     
+    #------------------------------------------EOFs scaled (case 2 of scaling)
+    eofs_scal2 = solver.eofs(eofscaling=2)
+
+    return solver, pcs_scal1, eofs_scal2, pcs_unscal0, eofs_unscal0, varfrac
+
+#////////////////////////////////////////////////////////////////////////////////////////////////
+#____________FUNCTION 2: Plot of the nth the EOFs and PCs
+def eof_plots(neof,pcs_scal1, eofs_scal2,var,varunits,lat,lon,tit,numens):
+    #----------------------------------------------------------------------------------------
+    print('____________________________________________________________________________________________________________________')
+    print('Plotting the EOFs and PCs')
+    #----------------------------------------------------------------------------------------
+
+    # Plot the PC scaled (divided by the square-root of their eigenvalues) in the selected domain
+    #------------------------------------------PCs scaled  (case 1 of scaling)
     figPC_scal1 = plt.figure(figsize=(24,14))
     ax = figPC_scal1.gca()
     plt.plot(pcs_scal1[:,neof])
@@ -63,7 +77,7 @@ def eof_computation(neof,var,varunits,lat,lon,tit,numens):
     
     # Plot the EOF scaled (multiplied by the square-root of their eigenvalues) in the selected domain
     #------------------------------------------EOFs scaled (case 2 of scaling)
-    eofs_scal2 = solver.eofs(eofscaling=2)
+
     #rangecolorbar=np.arange(-180, 200, 20)
     figEOF_scal2 = plt.figure(figsize=(14,14))
     #ax = figEOF_scal2.gca()
@@ -81,4 +95,4 @@ def eof_computation(neof,var,varunits,lat,lon,tit,numens):
     plt.title(ttEOF, fontsize=34, fontweight='bold')
     plt.tight_layout()
 
-    return solver, pcs_scal1, eofs_scal2, pcs_unscal0, eofs_unscal0, varfrac, figPC_scal1, figEOF_scal2
+    return figPC_scal1, figEOF_scal2

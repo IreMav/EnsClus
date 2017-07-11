@@ -6,8 +6,8 @@ import pandas as pd
 #____________Selecting a season (DJF,DJFM,NDJFM,JJA)
 def sel_season(var,dates,season):
     #----------------------------------------------------------------------------------------
-    print('____________________________________________________________________________________________________________________')
-    print('Selecting only {0} data'.format(season))
+    #print('____________________________________________________________________________________________________________________')
+    #print('Selecting only {0} data'.format(season))
     #----------------------------------------------------------------------------------------
     dates_pdh = pd.to_datetime(dates)
     if season=='DJF':       #ONLY DEC-JAN-FEB
@@ -102,8 +102,8 @@ def sel_area(lat,lon,var,area):
             lon_new=lon
     
     #----------------------------------------------------------------------------------------
-    print('____________________________________________________________________________________________________________________')
-    print('Selecting the area of interest: {0}'.format(printarea))
+    #print('____________________________________________________________________________________________________________________')
+    #print('Selecting the area of interest: {0}'.format(printarea))
     #----------------------------------------------------------------------------------------
     #-------------------------Selecting only an area
 
@@ -111,7 +111,7 @@ def sel_area(lat,lon,var,area):
     lonidx = (lon_new >= lonW) & (lon_new <= lonE)
     
     var_area = var_roll[:, latidx][..., lonidx]
-    print('Grid dimension of the selected area ---> {0}'.format(var_area[0].shape))
+    #print('Grid dimension of the selected area ---> {0}'.format(var_area[0].shape))
     
     return var_area,lat[latidx],lon_new[lonidx]
 

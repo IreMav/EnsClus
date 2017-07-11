@@ -46,7 +46,7 @@ done
 python ${CLUSTOOL_PATH}ens_anom.py "$filenames" "$OUTPUT_PATH" "$CLUSTOOL_PATH" "$name_outputs" "$varunits" "$string" "$extreme"
 
 ##ENSEMBLE EOF and K-MEANS
-#python ${CLUSTOOL_PATH}ens_eof_kmeans.py "$OUTPUT_PATH" "$CLUSTOOL_PATH" "$name_outputs" "$varunits" "$numpcs" "$perc" "$numclus"
+python ${CLUSTOOL_PATH}ens_eof_kmeans.py "$OUTPUT_PATH" "$CLUSTOOL_PATH" "$name_outputs" "$varunits" "$numpcs" "$perc" "$numclus"
 
 ls -lrt ../OUTPUT
 

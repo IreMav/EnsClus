@@ -11,8 +11,8 @@ def read3Dncfield(ifile):
         var, lat, lon, dates = read3Dncfield(filename)
     '''
     #----------------------------------------------------------------------------------------
-    print('__________________________________________________________')
-    print('Reading the 3D field [time x lat x lon]: \n{0}'.format(ifile))
+    #print('__________________________________________________________')
+    #print('Reading the 3D field [time x lat x lon]: \n{0}'.format(ifile))
     #----------------------------------------------------------------------------------------
     fh = Dataset(ifile, mode='r')
     variabs=[]

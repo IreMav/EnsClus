@@ -1,3 +1,5 @@
+#!/usr/bin/env python3 
+
 '''
 PYTHON WRAPPER ensemble clustering
     It provides input for the following modules: ens_anom.py ens_eof_kmeans.py
@@ -22,7 +24,7 @@ dir_CLUStool='/home/mavilia/MAGIC/EnsClus/clus/'
 # User-defined packages
 sys.path.insert(0,dir_CLUStool)
 from ens_anom import ens_anom
-from ens_of_kmeans import ens_eof_kmeans
+from ens_eof_kmeans import ens_eof_kmeans
 
 #-------------------------------about data-------------------------------------------
 # Write only letters or numbers, no punctuation marks!
@@ -44,10 +46,11 @@ extreme='75th_percentile'   #75th_percentile, mean, maximum
 #---------------------about cluster analysis------------------------------------------
 numclus=6              #number of clusters
 #Either set perc or numpcs:
-perc=80               #cluster analysis is applied on a number of PCs such as they explain
+perc=80                #cluster analysis is applied on a number of PCs such as they explain
                        #'perc' of total variance
-numpcs='no'               #number of PCs
+numpcs='no'            #number of PCs
 
+#____________Building the name of output files
 s = "_";
 seq = (varname,model,str(numens)+'ens',season,area,kind)
 name_outputs=s.join(seq)
