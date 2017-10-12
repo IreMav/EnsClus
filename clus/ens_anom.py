@@ -7,25 +7,20 @@ import numpy as np
 import sys
 import os
 
-def ens_anom(filenames,dir_OUTPUT,dir_CLUStool,name_outputs,varunits,string,extreme):
+def ens_anom(filenames,dir_OUTPUT,name_outputs,varname,numens,season,area,extreme):
     '''
     \nGOAL: Computation of the ensemble anomalies based on the desired percentile value from the input variable
     (it can be the percentile, the mean or the maximum)
     OUTPUT: NetCDF files of ensemble mean of climatology, seleced percentile and anomaly maps.
     '''
-    print(name_outputs)
-    varname=name_outputs.split("_")[0]
-    print('variable name: {0} ({1})'.format(varname,varunits))
-    numens=int(name_outputs.split("_")[2][:-3].upper())
-    print('number of ensemble members: {0}'.format(numens))
-    season=name_outputs.split("_")[3]          #seasonal average
-    area=name_outputs.split("_")[4]            #regional average (examples:'EAT':Euro-Atlantic,'PNA': Pacific North American)
     
     # User-defined packages
-    sys.path.insert(0,dir_CLUStool)
     from read_netcdf import read3Dncfield, save_N_2Dfields
     from sel_season_area import sel_season, sel_area
-    
+
+    print('***********************************OUTPUT***********************************')
+    print('The name of the output files will be <variable>_{0}.ext'.format(name_outputs))
+    print('Number of ensemble members: {0}'.format(numens))
     # OUTPUT DIRECTORY
     OUTPUTdir=dir_OUTPUT+'OUTPUT/'
     if not os.path.exists(OUTPUTdir):
@@ -39,7 +34,7 @@ def ens_anom(filenames,dir_OUTPUT,dir_CLUStool,name_outputs,varunits,string,extr
     for ens in range(numens):
         ifile=filenames[ens]
         print('ENSEMBLE MEMBER %s' %ens)
-        var, lat, lon, dates, time_units = read3Dncfield(ifile)
+        var, varunits, lat, lon, dates, time_units = read3Dncfield(ifile)
     
         #____________Convertion from kg m-2 s-1 to mm/day
         if varunits=='kg m-2 s-1':
@@ -57,16 +52,14 @@ def ens_anom(filenames,dir_OUTPUT,dir_CLUStool,name_outputs,varunits,string,extr
         var_ens.append(var_area)
     
     if varunits=='kg m-2 s-1':
-        print('____________________________________________________________________________________________________________________')
-        print('Precipitation rate units are converted from kg m-2 s-1 to mm/day')
+        print('\nPrecipitation rate units are converted from kg m-2 s-1 to mm/day')
     
-    print('\n----------------------------------------')
+    print('The variable is {0} ({1})'.format(varname,varunitsnew))
     print('Original var shape: (time x lat x lon)={0}'.format(var.shape))
     print('var shape after selecting season {0}: (time x lat x lon)={1}'.format(season,var_season.shape))
     print('var shape after selecting season {0} and area {1}: (time x lat x lon)={2}'.format(season,area,var_area.shape))
     print('Check the number of ensemble members: {0}'.format(len(var_ens)))
     
-
     if extreme=='mean':
         #____________Compute the time mean over the entire period, for each ensemble member
         varextreme_ens=[np.mean(var_ens[i],axis=0) for i in range(numens)]
@@ -79,37 +72,39 @@ def ens_anom(filenames,dir_OUTPUT,dir_CLUStool,name_outputs,varunits,string,extr
         #____________Compute the time mean over the extremes, for each ensemble member
         # MAXIMUM
         varextreme_ens=[np.max(var_ens[i],axis=0) for i in range(numens)]
-    
-    print('\nanomalies respect to the {0}'.format(extreme))
+
     varextreme_ens_np=np.array(varextreme_ens)
-    print('var shape: (numens x lat x lon)={0}'.format(varextreme_ens_np.shape))
-    
-    #____________Compute the anomalies with respect to the ensemble
+
+    print('\n------------------------------------------------------------')    
+    print('Anomalies are computed with respect to the {0}'.format(extreme))
+    print('------------------------------------------------------------\n')    
+
+    #____________Compute and save the anomalies with respect to the ensemble
     ens_anomalies=varextreme_ens_np-np.mean(varextreme_ens_np,axis=0)
+    varsave='ens_anomalies'
+    ofile=os.path.join(OUTPUTdir,'ens_anomalies_{0}.nc'.format(name_outputs))
+    #print(ofile)
+    print('Save the anomalies with respect to the ensemble:')
     print('ens_anomalies shape: (numens x lat x lon)={0}'.format(ens_anomalies.shape))
-    
-    
+    save_N_2Dfields(lat_area,lon_area,ens_anomalies,varsave,varunitsnew,ofile)
+
     #____________Compute and save the climatology
     vartimemean_ens=[np.mean(var_ens[i],axis=0) for i in range(numens)]
     ens_climatologies=np.array(vartimemean_ens)
     varsave='ens_climatologies'
     ofile=os.path.join(OUTPUTdir,'ens_climatologies_{0}.nc'.format(name_outputs))
-    print(ofile)
+    #print(ofile)
+    print('Save the climatology:')
     save_N_2Dfields(lat_area,lon_area,ens_climatologies,varsave,varunitsnew,ofile)
     
     #____________Save the extreme
     ens_extreme=varextreme_ens_np
     varsave='ens_extreme'
     ofile=os.path.join(OUTPUTdir,'ens_extreme_{0}.nc'.format(name_outputs))
-    print(ofile)
+    #print(ofile)
+    print('Save the extreme:')
     save_N_2Dfields(lat_area,lon_area,ens_extreme,varsave,varunitsnew,ofile)
     
-    
-    #____________Save the anomalies
-    varsave='ens_anomalies'
-    ofile=os.path.join(OUTPUTdir,'ens_anomalies_{0}.nc'.format(name_outputs))
-    print(ofile)
-    save_N_2Dfields(lat_area,lon_area,ens_anomalies,varsave,varunitsnew,ofile)
 
     return
 
@@ -121,16 +116,17 @@ if __name__ == '__main__':
     print('**************************************************************')
     print('Running {0}'.format(sys.argv[0]))
     print('**************************************************************')
-    filenames     = sys.argv[1].split()  # INPUT DIRECTORY
+    filenames     = sys.argv[1].split()  # input file names
     dir_OUTPUT    = sys.argv[2]          # OUTPUT DIRECTORY
-    dir_CLUStool  = sys.argv[3]          # CLUS_tool DIRECTORY
-    name_outputs  = sys.argv[4]          # name of the outputs
-    varunits      = sys.argv[5]          # variable units
-    string        = sys.argv[6]          # part of the input file name
-    extreme       = sys.argv[7]          # chosen extreme to investigate
-    
-    ens_anom(filenames,dir_OUTPUT,dir_CLUStool,name_outputs,varunits,string,extreme)
+    name_outputs  = sys.argv[3]          # name of the outputs
+    varname       = sys.argv[4]          # variable name
+    numens        = int(sys.argv[5])     # number of ensemble members
+    season        = sys.argv[6]          # seasonal average
+    area          = sys.argv[7]          # regional average
+    extreme       = sys.argv[8]          # chosen extreme to investigate
+
+    ens_anom(filenames,dir_OUTPUT,name_outputs,varname,numens,season,area,extreme)
 
 else:
-    print('I am being imported from another module')
+    print('ens_anom is being imported from another module')
 

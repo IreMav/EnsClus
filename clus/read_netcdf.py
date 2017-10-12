@@ -33,7 +33,7 @@ def read3Dncfield(ifile):
        
     #print('\n'+txt)
        
-    return var, lat, lon, dates, time_units
+    return var, var_units, lat, lon, dates, time_units
 
 
 def save_N_2Dfields(lats,lons,variab,varname,varunits,ofile):
@@ -100,11 +100,12 @@ def read_N_2Dfields(ifile):
     lat         = fh.variables['lat'][:]
     lon         = fh.variables['lon'][:]
     var         = fh.variables[variabs[3]][:,:,:]
+    var_units   = fh.variables[variabs[3]].units
     txt='{0} dimension [num x lat x lon]: {1}'.format(variabs[3],var.shape)
     #print(fh.variables)
     fh.close()
        
     #print('\n'+txt)
        
-    return var, lat, lon
+    return var, var_units, lat, lon
 

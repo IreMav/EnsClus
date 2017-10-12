@@ -10,7 +10,7 @@ from sklearn.cluster import KMeans
 import datetime
 from numpy import linalg as LA
 
-def ens_eof_kmeans(dir_OUTPUT,dir_CLUStool,name_outputs,varunits,numpcs,perc,numclus):
+def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     '''
     \nGOAL:
     Find the most representative ensemble member for each cluster.
@@ -19,33 +19,14 @@ def ens_eof_kmeans(dir_OUTPUT,dir_CLUStool,name_outputs,varunits,numpcs,perc,num
     - K-means cluster analysis applied to the retained Principal Components (PCs)
     OUTPUT: 
     '''
-    print(name_outputs)
-    varname=name_outputs.split("_")[0]
-    print('variable name: {0} ({1})'.format(varname,varunits))
-    model=name_outputs.split("_")[1]
-    print('model: {0}'.format(model))
-    
-    numens=int(name_outputs.split("_")[2][:-3].upper())
-    print('number of ensemble members: {0}'.format(numens))
 
-    if numpcs!='no':
-        numpcs=int(numpcs)
-        print('number of principal components: {0}'.format(numpcs))
-    
-    if perc!='no':
-        perc=int(perc)
-        print('percentage of explained variance: {0}%'.format(perc))
-    
-    if (perc=='no' and numpcs=='no') or (perc!='no' and numpcs!='no'):
-        raise ValueError('You have to specify either "perc" or "numpcs".')
-    
-    print('number of clusters: {0}'.format(numclus))
-    
     # User-defined libraries
-    sys.path.insert(0,dir_CLUStool)
     from read_netcdf import read_N_2Dfields
     from eof_tool import eof_computation
     
+    print('***********************************OUTPUT***********************************')
+    print('The name of the output files will be <variable>_{0}.ext'.format(name_outputs))
+    print('Number of ensemble members: {0}'.format(numens))
     # OUTPUT DIRECTORY
     OUTPUTdir=dir_OUTPUT+'OUTPUT/'
     if not os.path.exists(OUTPUTdir):
@@ -53,10 +34,26 @@ def ens_eof_kmeans(dir_OUTPUT,dir_CLUStool,name_outputs,varunits,numpcs,perc,num
         print('The output directory {0} is created'.format(OUTPUTdir))
     else:
         print('The output directory {0} already exists'.format(OUTPUTdir))
+    model=name_outputs.split("_")[1]
+    print('Model: {0}'.format(model))
+    # Either perc (cluster analysis is applied on a number of PCs such as they explain
+    # 'perc' of total variance) or numpcs (number of PCs to retain) is set:
+    if numpcs!='no':
+        numpcs=int(numpcs)
+        print('Number of principal components: {0}'.format(numpcs))
+    
+    if perc!='no':
+        perc=int(perc)
+        print('Percentage of explained variance: {0}%'.format(perc))
+    
+    if (perc=='no' and numpcs=='no') or (perc!='no' and numpcs!='no'):
+        raise ValueError('You have to specify either "perc" or "numpcs".')
+    
+    print('Number of clusters: {0}'.format(numclus))
 
     #____________Reading the netCDF file of N 2Dfields of anomalies, saved by ensemble_anomalies.py
     ifile=os.path.join(OUTPUTdir,'ens_anomalies_{0}.nc'.format(name_outputs))
-    var, lat, lon = read_N_2Dfields(ifile)
+    var, varunits, lat, lon = read_N_2Dfields(ifile)
     print('var shape: (numens x lat x lon)={0}'.format(var.shape))
     
     
@@ -84,7 +81,7 @@ def ens_eof_kmeans(dir_OUTPUT,dir_CLUStool,name_outputs,varunits,numpcs,perc,num
     print('k-means analysis using a subset of PCs')
     #----------------------------------------------------------------------------------------
     PCs=pcs_unscal0[:,:numpcs]
-    
+
     clus=KMeans(n_clusters=numclus, n_init=600, max_iter=1000)
     
     start = datetime.datetime.now()
@@ -115,11 +112,11 @@ def ens_eof_kmeans(dir_OUTPUT,dir_CLUStool,name_outputs,varunits,numpcs,perc,num
     print('\nCluster patterns shape: {0}'.format(cluspattern.shape))
     
     print('Cluster labels')
-    print(L[0][0],L[1][0],L[2][0],L[3][0])
+    print([L[ncl][0] for ncl in range(numclus)])
     print('Cluster frequencies')
-    print(L[0][1],L[1][1],L[2][1],L[3][1]) 
+    print([L[ncl][1] for ncl in range(numclus)]) 
     print('Cluster members')
-    print(L[0][2],L[1][2],L[2][2],L[3][2])
+    print([L[ncl][2] for ncl in range(numclus)])
     
     #____________Find the most representative ensemble memeber for each cluster
     print('____________________________________________________________________________________________________________________')
@@ -187,14 +184,13 @@ if __name__ == '__main__':
     print('Running {0}'.format(sys.argv[0]))
     print('**************************************************************')
     dir_OUTPUT    = sys.argv[1]  # OUTPUT DIRECTORY
-    dir_CLUStool  = sys.argv[2]  # CLUS_tool DIRECTORY
-    name_outputs  = sys.argv[3]  # name of the outputs
-    varunits      = sys.argv[4]  # variable units
-    numpcs        = sys.argv[5]  # number of retained PCs
-    perc          = sys.argv[6]  # percentage of explained variance by PCs
-    numclus       = int(sys.argv[7])  # number of clusters
+    name_outputs  = sys.argv[2]  # name of the outputs
+    numens        = int(sys.argv[3])  # number of ensemble members
+    numpcs        = sys.argv[4]  # number of retained PCs
+    perc          = sys.argv[5]  # percentage of explained variance by PCs
+    numclus       = int(sys.argv[6])  # number of clusters
     
-    ens_eof_kmeans(dir_OUTPUT,dir_CLUStool,name_outputs,varunits,numpcs,perc,numclus)
+    ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus)
     
 else:
-    print('I am being imported from another module')
+    print('ens_eof_kmeans is being imported from another module')

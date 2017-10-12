@@ -43,10 +43,11 @@ for word in $filenames; do
     echo $word
 done
 
-python ${CLUSTOOL_PATH}ens_anom.py "$filenames" "$OUTPUT_PATH" "$CLUSTOOL_PATH" "$name_outputs" "$varunits" "$string" "$extreme"
+python ${CLUSTOOL_PATH}ens_anom.py "$filenames" "$OUTPUT_PATH" "$name_outputs" "$varname" "$numens" "$season" "$area" "$extreme"
 
 ##ENSEMBLE EOF and K-MEANS
-python ${CLUSTOOL_PATH}ens_eof_kmeans.py "$OUTPUT_PATH" "$CLUSTOOL_PATH" "$name_outputs" "$varunits" "$numpcs" "$perc" "$numclus"
+python ${CLUSTOOL_PATH}ens_eof_kmeans.py "$OUTPUT_PATH" "$name_outputs" "$numens" "$numpcs" "$perc" "$numclus"
 
 ls -lrt ../OUTPUT
 
+echo ">>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<"
