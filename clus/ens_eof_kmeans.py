@@ -158,7 +158,7 @@ def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
             ens=members[mem]
             #print('ens',ens)
             normens=centroids[nclus,:]-PCs[ens,:]
-            norm[nclus,mem]=math.sqrt(sum(normens*normens))
+            norm[nclus,mem]=math.sqrt(sum(normens**2))
             #print('norm=',norm[nclus],norm.dtype)
         print('The distances between centroid of cluster {0} and its belonging members {1} are:\n{2}'.format(nclus,members,np.round(norm[nclus],3)))
         print('MINIMUM DISTANCE WITHIN CLUSTER {0} IS {1} --> member #{2}'.format(nclus,round(norm[nclus].min(),3),members[np.where(norm[nclus] == norm[nclus].min())[0][0]]))
