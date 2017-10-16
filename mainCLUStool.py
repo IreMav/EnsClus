@@ -70,7 +70,7 @@ name_outputs=s.join(seq)
 
 # Creating the log file in the Log directory
 if not os.path.exists(dir_OUTPUT+'Log'):
-    os.makedir(dir_OUTPUT+'Log')
+    os.mkdir(dir_OUTPUT+'Log')
 class Tee(object):
     def __init__(self, *files):
         self.files = files

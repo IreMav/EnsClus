@@ -8,7 +8,7 @@ import sys
 import os
 from sklearn.cluster import KMeans
 import datetime
-from numpy import linalg as LA
+import math
 
 def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     '''
@@ -17,7 +17,8 @@ def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     METHODS:
     - Empirical Orthogonal Function (EOF) analysis of the input file
     - K-means cluster analysis applied to the retained Principal Components (PCs)
-    OUTPUT: 
+    OUTPUT:
+    Frequency 
     '''
 
     # User-defined libraries
@@ -54,7 +55,7 @@ def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     #____________Reading the netCDF file of N 2Dfields of anomalies, saved by ensemble_anomalies.py
     ifile=os.path.join(OUTPUTdir,'ens_anomalies_{0}.nc'.format(name_outputs))
     var, varunits, lat, lon = read_N_2Dfields(ifile)
-    print('var shape: (numens x lat x lon)={0}'.format(var.shape))
+    print('var dim: (numens x lat x lon)={0}'.format(var.shape))
     
     
     #____________Compute EOFs (Empirical Orthogonal Functions)
@@ -79,7 +80,7 @@ def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     #____________Compute k-means analysis using a subset of PCs
     print('____________________________________________________________________________________________________________________')
     print('k-means analysis using a subset of PCs')
-    #----------------------------------------------------------------------------------------
+    print('____________________________________________________________________________________________________________________')    #----------------------------------------------------------------------------------------
     PCs=pcs_unscal0[:,:numpcs]
 
     clus=KMeans(n_clusters=numclus, n_init=600, max_iter=1000)
@@ -93,84 +94,76 @@ def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     labels=clus.labels_                      # shape---> (numens,)
     
     print('\nClusters are identified for {0} PCs (explained variance {1}%)'.format(numpcs, "%.2f" %exctperc))
-    print('Centroids shape: {0}, labels shape: {1}\n'.format(centroids.shape,labels.shape))
-    print('PC shape: {0}, EOF shape: {1}\n'.format(pcs_unscal0[:,:numpcs].shape,eofs_unscal0[:numpcs].shape))
+    print('PCs dim: (number of ensemble members, number of PCs)={0}, EOF dim: (number of ensemble members, lat, lon)={1}'.format(pcs_unscal0[:,:numpcs].shape,eofs_unscal0[:numpcs].shape))
+    print('Centroid coordinates dim: (number of clusters, number of PCs)={0}, labels dim: (number of ensemble members,)={1}\n'.format(centroids.shape,labels.shape))
     
     #____________Save labels
-    namef=os.path.join(OUTPUTdir,'frequency_index_{0}.txt'.format(name_outputs))
+    namef=os.path.join(OUTPUTdir,'labels_{0}.txt'.format(name_outputs))
     np.savetxt(namef,labels,fmt='%d')
     
-    #____________Compute cluster patterns
-    cluspattern=np.empty([numclus,var.shape[1],var.shape[2]])
+    #____________Compute cluster frequencies
     L=[]
     for nclus in range(numclus):
         cl=list(np.where(labels==nclus)[0])
         fr=len(cl)*100/len(labels)
-        cluspattern[nclus,:,:]=np.mean(var[cl,:,:],axis=0)
         L.append([nclus,fr,cl])
-    print('[[cluster, frequency (%), [members belonging to that cluster]]]:\n{0}'.format(L))
-    print('\nCluster patterns shape: {0}'.format(cluspattern.shape))
-    
-    print('Cluster labels')
+    print('Cluster labels:')
     print([L[ncl][0] for ncl in range(numclus)])
-    print('Cluster frequencies')
-    print([L[ncl][1] for ncl in range(numclus)]) 
-    print('Cluster members')
+    print('Cluster frequencies (%):')
+    print([round(L[ncl][1],3) for ncl in range(numclus)]) 
+    print('Cluster members:')
     print([L[ncl][2] for ncl in range(numclus)])
     
-    #____________Find the most representative ensemble memeber for each cluster
+    #____________Find the most representative ensemble member for each cluster
     print('____________________________________________________________________________________________________________________')
-    print('Compute distance between cluster centroids and each ensemble member,\nin order to find the most representative ensemble memeber for each cluster')
+    print('In order to find the most representative ensemble member for each cluster\n(which is the closest member to the cluster centroid)')
+    print('the Euclidean distance between cluster centroids and each ensemble member is computed in the PC space')
     print('____________________________________________________________________________________________________________________')
-    print('Compute centroid-PC norm')
     # 1)
-    print('DIM cluster 1 centroid: {0}'.format(centroids[1,:].shape))
-    print('DIM ensemble member 1 PC: {0}'.format(PCs[1,:].shape))
+    print('Check: cluster #1 centroid coordinates vector dim {0} should be the same as the member #1 PC vector dim {1}\n'.format(centroids[1,:].shape,PCs[1,:].shape))
     #print('\nIn the PC space, the distance between:')
     norm=np.empty([numclus,numens])
     finalOUTPUT=[]
+    repres=[]
     for nclus in range(numclus):
         for ens in range(numens):
-            normens=LA.norm(centroids[nclus,:]-PCs[ens,:])
-            #print('centroid of cluster {0} and ensemble memeber {1} is {2}'.format(nclus,ens,normens))
-            norm[nclus,ens]=normens
-        print('MINIMUM FOR CLUS {0} IS {1}'.format(nclus,norm[nclus].min()))
-        print('ARG MINIMUM FOR CLUS {0} IS {1}'.format(nclus,list(np.where(norm[nclus] == norm[nclus].min())[0])))
+            normens=centroids[nclus,:]-PCs[ens,:]
+            norm[nclus,ens]=math.sqrt(sum(normens**2))
+            #print('The distance between centroid of cluster {0} and member {1} is {2}'.format(nclus,ens,round(norm[nclus,ens],3)))
+        print('The distances between centroid of cluster {0} and member #0 to #{1} are:\n{2}'.format(nclus,numens-1,np.round(norm[nclus],3)))
+        print('MINIMUM DISTANCE FOR CLUSTER {0} IS {1} --> member #{2}'.format(nclus,round(norm[nclus].min(),3),list(np.where(norm[nclus] == norm[nclus].min())[0])))
+        repres.append(np.where(norm[nclus] == norm[nclus].min())[0][0])
+        print('MAXIMUM DISTANCE FOR CLUSTER {0} IS {1} --> member #{2}\n'.format(nclus,round(norm[nclus].max(),3),list(np.where(norm[nclus] == norm[nclus].max())[0])))
+
         txt='Closest ensemble member/members to centroid of cluster {0} is/are {1}\n'.format(nclus,list(np.where(norm[nclus] == norm[nclus].min())[0]))
         finalOUTPUT.append(txt)
-        repres=list(np.where(norm[nclus] == norm[nclus].min())[0])
-        #____________Save the most representative ensemble members
-        namef=os.path.join(OUTPUTdir,'repr_ens_{0}.txt'.format(name_outputs))
-        with open(namef,'ab') as f_handle:
-            np.savetxt(f_handle,repres,fmt='%i')
-    
     with open(OUTPUTdir+'RepresentativeEnsembleMembers_{0}.txt'.format(name_outputs), "w") as text_file:
         text_file.write(''.join(str(e) for e in finalOUTPUT))
-    
-    print('\nIn the PC space, the distance between each ensemble in a cluster and its centroid:')
-    norm=np.empty([numclus,numens])
+
+    #____________Save the most representative ensemble members
+    namef=os.path.join(OUTPUTdir,'repr_ens_{0}.txt'.format(name_outputs))
+    np.savetxt(namef,repres,fmt='%i')
+        
+    print('____________________________________________________________________________________________________________________')
+    print('In order to study the spread of each cluster,')
+    print('the standard deviation of the distances between each member in a cluster and the cluster centroid is computed in the PC space')
+    print('____________________________________________________________________________________________________________________')
+    print('\nIn the PC space, the distance between :')
+
     for nclus in range(numclus):
-        for ens in range(numens):
-            normens=LA.norm(centroids[nclus,:]-PCs[ens,:])
-            norm[nclus,ens]=normens
-        print('MAXIMUM FOR CLUS {0} IS {1}'.format(nclus,norm[nclus].max()))
-        print('ARG MAXIMUM FOR CLUS {0} IS {1}'.format(nclus,list(np.where(norm[nclus] == norm[nclus].max())[0])))
-        txt='Furthest ensemble member/members to centroid of cluster {0} is/are {1}\n'.format(nclus,list(np.where(norm[nclus] == norm[nclus].max())[0]))
-        print(txt)
-        print('==============================================================')
-        print('INTRA-CLUSTER STANDARD DEVIATION FOR CLUS {0} IS {1}'.format(nclus,norm[nclus].std()))
-    
-    
-    ## 2)
-    #norm=[]
-    #p_centroid=np.empty([numclus,numpcs])
-    #for nclus in range(numclus):
-    #    p_centroid[nclus,:] = solver.projectField(cluspattern[nclus],neofs=numpcs, eofscaling=0, weighted=True)
-    #    for ens in range(numens):
-    #        norm.append(LA.norm(p_centroid[nclus,:]-PCs[ens,:]))
-    #print('DIM cluster projection 1 centroid: {0}'.format(p_centroid[1,:].shape))
-    #print('DIM ensemble member 1 PC: {0}'.format(PCs[1,:].shape))
-    #print('\nnorm=',norm)
+        members=L[nclus][2]
+        norm=np.empty([numclus,len(members)])
+        for mem in range(len(members)):
+            #print('mem=',mem)
+            ens=members[mem]
+            #print('ens',ens)
+            normens=centroids[nclus,:]-PCs[ens,:]
+            norm[nclus,mem]=math.sqrt(sum(normens*normens))
+            #print('norm=',norm[nclus],norm.dtype)
+        print('The distances between centroid of cluster {0} and its belonging members {1} are:\n{2}'.format(nclus,members,np.round(norm[nclus],3)))
+        print('MINIMUM DISTANCE WITHIN CLUSTER {0} IS {1} --> member #{2}'.format(nclus,round(norm[nclus].min(),3),members[np.where(norm[nclus] == norm[nclus].min())[0][0]]))
+        print('MAXIMUM DISTANCE WITHIN CLUSTER {0} IS {1} --> member #{2}'.format(nclus,round(norm[nclus].max(),3),members[np.where(norm[nclus] == norm[nclus].max())[0][0]]))
+        print('INTRA-CLUSTER STANDARD DEVIATION FOR CLUSTER {0} IS {1}\n'.format(nclus,norm[nclus].std()))
     
     return
 

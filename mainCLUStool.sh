@@ -31,9 +31,9 @@ extreme=75th_percentile  #75th_percentile, mean, maximum
 #---------------------about cluster analysis------------------------------------------
 numclus=6              #number of clusters
 #Either set perc or numpcs:
-perc=80               #cluster analysis is applied on a number of PCs such as they explain
-                       #'perc' of total variance
-numpcs=no               #number of PCs
+perc=80              #cluster analysis is applied on a number of PCs such as they explain
+                     #'perc' of total variance
+numpcs=no            #number of PCs
 
 name_outputs="${varname}_${model}_${numens}ens_${season}_${area}_${kind}"
 
