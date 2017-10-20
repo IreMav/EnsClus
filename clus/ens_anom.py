@@ -6,6 +6,7 @@
 import numpy as np
 import sys
 import os
+from scipy import stats
 
 def ens_anom(filenames,dir_OUTPUT,name_outputs,varname,numens,season,area,extreme):
     '''
@@ -51,7 +52,7 @@ def ens_anom(filenames,dir_OUTPUT,name_outputs,varname,numens,season,area,extrem
         
         var_ens.append(var_area)
     
-    if varunits=='kg m-2 s-1':
+    if varunitsnew=='mm/day':
         print('\nPrecipitation rate units are converted from kg m-2 s-1 to mm/day')
     
     print('The variable is {0} ({1})'.format(varname,varunitsnew))
@@ -59,22 +60,47 @@ def ens_anom(filenames,dir_OUTPUT,name_outputs,varname,numens,season,area,extrem
     print('var shape after selecting season {0}: (time x lat x lon)={1}'.format(season,var_season.shape))
     print('var shape after selecting season {0} and area {1}: (time x lat x lon)={2}'.format(season,area,var_area.shape))
     print('Check the number of ensemble members: {0}'.format(len(var_ens)))
-    
+
     if extreme=='mean':
         #____________Compute the time mean over the entire period, for each ensemble member
+        # MEAN
         varextreme_ens=[np.mean(var_ens[i],axis=0) for i in range(numens)]
-    elif extreme.split("_")[1]=='percentile':
-        #____________Compute the time mean over the extremes, for each ensemble member
+
+    elif len(extreme.split("_"))==2:
+        #____________Compute the chosen percentile over the period, for each ensemble member
         # PERCENTILE
         q=int(extreme.partition("th")[0])
         varextreme_ens=[np.percentile(var_ens[i],q,axis=0) for i in range(numens)]
+    
     elif extreme=='maximum':
-        #____________Compute the time mean over the extremes, for each ensemble member
+        #____________Compute the maximum value over the period, for each ensemble member
         # MAXIMUM
         varextreme_ens=[np.max(var_ens[i],axis=0) for i in range(numens)]
+    
+    elif extreme=='std':
+        #____________Compute the standard deviation over the period, for each ensemble member
+        # STANDARD DEVIATION
+        varextreme_ens=[np.std(var_ens[i],axis=0) for i in range(numens)]
+    
+    elif extreme=='trend':
+        #____________Compute the linear trend over the period, for each ensemble member
+        # TREND
+        # Reshape grid to 2D (time, lat*lon)  -> Y
+        #Y=[var_ens[i].reshape(var_ens[0].shape[0],var_ens[0].shape[1]*var_ens[0].shape[2])for i in range(numens)]
+        #print('Reshaped (time, lat*lon) variable: ',Y[0].shape)
+        trendmap=np.empty((var_ens[0].shape[1],var_ens[0].shape[2]))
+        trendmap_ens=[]
+        for i in range(numens):
+            for la in range(var_ens[0].shape[1]):
+                for lo in range(var_ens[0].shape[2]):
+                    slope, intercept, r_value, p_value, std_err = stats.linregress(range(var_ens[0].shape[0]),var_ens[i][:,la,lo])
+                    trendmap[la,lo]=slope
+            trendmap_ens.append(trendmap)
+        varextreme_ens = trendmap_ens
 
+    print(len(varextreme_ens),varextreme_ens[0].shape)
     varextreme_ens_np=np.array(varextreme_ens)
-
+    print(varextreme_ens_np.shape)
     print('\n------------------------------------------------------------')    
     print('Anomalies are computed with respect to the {0}'.format(extreme))
     print('------------------------------------------------------------\n')    

@@ -16,24 +16,24 @@ CLUSTOOL_PATH=/home/mavilia/MAGIC/EnsClus/clus/
 #-------------------------------about data-------------------------------------------
 # Write only letters or numbers, no punctuation marks!
 # If you want to leave the field empty write 'no' 
-varname=pr          #variable name in the file
+varname=pr                      #variable name in the file
 varunits="kg m-2 s-1"           #variable units (K, 'kg m-2 s-1')
-model=ECEARTH31      #model name ECEARTH31 NCEPNCAR ERAInterim
-numens=60            #total number of ensemble members
-season=JJA           #seasonal average
-area=Eu              #regional average (examples:'EAT':Euro-Atlantic
-                     #                           'PNA': Pacific North American
-                     #                           'NH': Northern Hemisphere)
-                     #                           'Eu': Europe)
-kind=hist            #hist: historical, scen:scenario
-extreme=75th_percentile  #75th_percentile, mean, maximum
+model=ECEARTH31                 #model name ECEARTH31 NCEPNCAR ERAInterim
+numens=60                       #total number of ensemble members
+season=JJA                      #seasonal average
+area=Eu                         #regional average (examples:'EAT':Euro-Atlantic
+                                #                           'PNA': Pacific North American
+                                #                           'NH': Northern Hemisphere)
+                                #                           'Eu': Europe)
+kind=hist                       #hist: historical, scen:scenario
+extreme=75th_percentile         #75th_percentile, mean, maximum, std, trend
 
 #---------------------about cluster analysis------------------------------------------
-numclus=6              #number of clusters
+numclus=6                       #number of clusters
 #Either set perc or numpcs:
-perc=80              #cluster analysis is applied on a number of PCs such as they explain
-                     #'perc' of total variance
-numpcs=no            #number of PCs
+perc=80                         #cluster analysis is applied on a number of PCs such as they explain
+                                #'perc' of total variance
+numpcs=no                       #number of PCs
 
 name_outputs="${varname}_${model}_${numens}ens_${season}_${area}_${kind}"
 

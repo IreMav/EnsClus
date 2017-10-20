@@ -104,7 +104,7 @@ print('_____________________________\n')
 ens_anom(filenames,dir_OUTPUT,name_outputs,varname,numens,season,area,extreme)
 
 ####################### EOF AND K-MEANS ANALYSES #######################
-#____________run ens_anom as a module
+#____________run ens_eof_kmeans as a module
 ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus)
 
 print('\n>>>>>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<\n')
