@@ -10,9 +10,9 @@ from scipy import stats
 
 def ens_anom(filenames,dir_OUTPUT,name_outputs,varname,numens,season,area,extreme):
     '''
-    \nGOAL: Computation of the ensemble anomalies based on the desired percentile value from the input variable
-    (it can be the percentile, the mean or the maximum)
-    OUTPUT: NetCDF files of ensemble mean of climatology, seleced percentile and anomaly maps.
+    \nGOAL: Computation of the ensemble anomalies based on the desired value from the input variable
+    (it can be the percentile, mean, maximum, standard deviation or trend)
+    OUTPUT: NetCDF files of ensemble mean of climatology, selected value and anomaly maps.
     '''
     
     # User-defined packages

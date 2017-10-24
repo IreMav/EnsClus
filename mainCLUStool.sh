@@ -4,8 +4,7 @@
 #-------------------------------about paths------------------------------------------
 # Input data directory:
 INPUT_PATH=/home/mavilia/DATA/historical/prRegrid/
-
-# Input file names strart from string:
+# Input file names included the common string:
 string=pr_Amon
 
 # OUTPUT directory

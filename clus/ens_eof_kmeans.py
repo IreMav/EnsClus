@@ -52,7 +52,7 @@ def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     
     print('Number of clusters: {0}'.format(numclus))
 
-    #____________Reading the netCDF file of N 2Dfields of anomalies, saved by ensemble_anomalies.py
+    #____________Reading the netCDF file of N 2Dfields of anomalies, saved by ens_anom.py
     ifile=os.path.join(OUTPUTdir,'ens_anomalies_{0}.nc'.format(name_outputs))
     var, varunits, lat, lon = read_N_2Dfields(ifile)
     print('var dim: (numens x lat x lon)={0}'.format(var.shape))

@@ -26,6 +26,7 @@ import sys
 #-------------------------------about paths------------------------------------------
 # Input data directory:
 INPUT_PATH='/home/mavilia/DATA/historical/prRegrid/'
+# Input file names included the common string:
 string='pr_Amon'
 
 # OUTPUT directory
@@ -53,7 +54,7 @@ area='Eu'                   #regional average (examples:'EAT':Euro-Atlantic
                             #                           'NH': Northern Hemisphere)
                             #                           'Eu': Europe)
 kind='hist'                 #hist: historical, scen:scenario
-extreme='75th_percentile'   #75th_percentile, mean, maximum
+extreme='75th_percentile'   #75th_percentile, mean, maximum, std, trend
 
 #---------------------about cluster analysis------------------------------------------
 numclus=6              #number of clusters
