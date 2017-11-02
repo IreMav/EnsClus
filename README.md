@@ -3,7 +3,7 @@ October 2017
 by Irene Mavilia (ISAC-CNR, i.mavilia@isac.cnr.it)
 
 ## Overview
-EnsClus is a cluster analysis tool in Python, based on the k-means algorithm, for ensembles of climate model simulations. The aim is to group ensemble members according to similar characteristics and to select the most representative member for each cluster. The user choose which feature of the data is used to group the ensemble members by the clustering: time mean, maximum, a certain percentile (75% in the examples below), standard deviation and trend over the time period.
+**EnsClus** is a cluster analysis tool in Python, based on the k-means algorithm, for ensembles of climate model simulations. The aim is to group ensemble members according to similar characteristics and to select the most representative member for each cluster. The user choose which feature of the data is used to group the ensemble members by the clustering: time mean, maximum, a certain percentile (75% in the examples below), standard deviation and trend over the time period.
 For each ensemble member this value is computed at each grid point, obtaining N lat-lon maps, where N is the number of ensemble members.
 The anomaly is computed subtracting the ensemble mean of these maps to each of the single maps. The anomaly is therefore computed with respect to the ensemble members (and not with respect to the time) and the Empirical Orthogonal Function (EOF) analysis is applied to these anomaly maps.
 Regarding the EOF analysis, the user can choose either how many Principal Components (PCs) the user want to retain or the percentage of explained variance the user want to keep.
@@ -12,7 +12,7 @@ The major final outputs are the classification in clusters, i.e. which member be
 Other outputs refer to the statistics of clustering: in the PC space, the minimum and the maximum distance between a member in a cluster and the cluster centroid (i.e. the closest and the furthest member), the intra-cluster standard deviation for each cluster (i.e. how much the cluster is compact).
 
 ## Details
-Two equivalent wrappers, a shell wrapper (mainCLUStool.sh) and a Python wrapper (mainCLUStool.py), are provided to launch the tool. Not that only the Python wrapper creates a Log folder with a text file of all the printed messages, so far. The wrappers accept and pass the set of parameters required by the EnsClus tool.
+Two equivalent wrappers, a shell wrapper (mainCLUStool.sh) and a Python wrapper (mainCLUStool.py), are provided to launch the tool. Note that only the Python wrapper creates a Log folder with a text file of all the printed messages, so far. The wrappers accept and pass the set of parameters required by the EnsClus tool.
 
 Use either ```./mainCLUStool.sh``` command or ```./mainCLUStool.py``` command to launch the tool.
 ### Input
