@@ -9,6 +9,8 @@ import os
 from sklearn.cluster import KMeans
 import datetime
 import math
+import pandas as pd
+import collections
 
 def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     '''
@@ -80,7 +82,8 @@ def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     #____________Compute k-means analysis using a subset of PCs
     print('____________________________________________________________________________________________________________________')
     print('k-means analysis using a subset of PCs')
-    print('____________________________________________________________________________________________________________________')    #----------------------------------------------------------------------------------------
+    print('____________________________________________________________________________________________________________________')
+    #----------------------------------------------------------------------------------------
     PCs=pcs_unscal0[:,:numpcs]
 
     clus=KMeans(n_clusters=numclus, n_init=600, max_iter=1000)
@@ -148,8 +151,8 @@ def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     print('In order to study the spread of each cluster,')
     print('the standard deviation of the distances between each member in a cluster and the cluster centroid is computed in the PC space')
     print('____________________________________________________________________________________________________________________')
-    print('\nIn the PC space, the distance between :')
-
+    print('\nIn the PC space:')
+    statOUTPUT=[]
     for nclus in range(numclus):
         members=L[nclus][2]
         norm=np.empty([numclus,len(members)])
@@ -160,11 +163,27 @@ def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
             normens=centroids[nclus,:]-PCs[ens,:]
             norm[nclus,mem]=math.sqrt(sum(normens**2))
             #print('norm=',norm[nclus],norm.dtype)
-        print('The distances between centroid of cluster {0} and its belonging members {1} are:\n{2}'.format(nclus,members,np.round(norm[nclus],3)))
+        print('the distances between centroid of cluster {0} and its belonging members {1} are:\n{2}'.format(nclus,members,np.round(norm[nclus],3)))
         print('MINIMUM DISTANCE WITHIN CLUSTER {0} IS {1} --> member #{2}'.format(nclus,round(norm[nclus].min(),3),members[np.where(norm[nclus] == norm[nclus].min())[0][0]]))
         print('MAXIMUM DISTANCE WITHIN CLUSTER {0} IS {1} --> member #{2}'.format(nclus,round(norm[nclus].max(),3),members[np.where(norm[nclus] == norm[nclus].max())[0][0]]))
         print('INTRA-CLUSTER STANDARD DEVIATION FOR CLUSTER {0} IS {1}\n'.format(nclus,norm[nclus].std()))
-    
+        
+        d_stat=collections.OrderedDict()
+        d_stat['cluster']=nclus
+        d_stat['member']=members
+        d_stat['d_to_centroid']=np.round(norm[nclus],3)
+        d_stat['intra-clus_std']=norm[nclus].std()
+        d_stat['d_min']=round(norm[nclus].min(),3)
+        d_stat['d_max']=round(norm[nclus].max(),3)
+        d_stat['freq(%)']=round(L[nclus][1],3)
+        stat=pd.DataFrame(d_stat)
+        statOUTPUT.append(stat)
+    statOUTPUT = pd.concat(statOUTPUT, axis=0)
+    #____________Save statistics of cluster analysis
+    namef=os.path.join(OUTPUTdir,'statistics_clutering_{0}.txt'.format(name_outputs))
+    with open(namef, 'w') as text_file:
+        text_file.write(statOUTPUT.__repr__())
+
     return
 
 
