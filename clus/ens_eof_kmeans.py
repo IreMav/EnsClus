@@ -28,7 +28,7 @@ def ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus):
     from eof_tool import eof_computation
     
     print('***********************************OUTPUT***********************************')
-    print('The name of the output files will be <variable>_{0}.ext'.format(name_outputs))
+    print('The name of the output files will be <variable>_{0}.txt'.format(name_outputs))
     print('Number of ensemble members: {0}'.format(numens))
     # OUTPUT DIRECTORY
     OUTPUTdir=dir_OUTPUT+'OUTPUT/'

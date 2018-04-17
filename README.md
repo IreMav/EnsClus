@@ -26,6 +26,10 @@ The module computes the ensemble anomalies based on the desired value from the i
 * *ens_eof_kmeans.py*
 
 The module reads the netCDF file of anomalies, saved by ens_anom.py and computes the Empirical Orthogonal Function (EOF) analysis of the input file. The K-means cluster analysis is then applied to the retained Principal Components (PCs) and each member is assigned to a cluster. Frequency of occurrence and belonging members of the clusters are given. In order to find the most representative ensemble member for each cluster, which is the closest member to the cluster centroid, the Euclidean distance between cluster centroids and each ensemble member is computed in the PC space. Statistics of clustering as the minimum, the maximum and the standard deviation of the distances between each member in a cluster and the cluster centroid are computed.
+* *ens_plots.py*
+
+The module reads the netCDF file of the chosen field to plot (climatologies, anomalies, 75th_percentile, mean, maximum, std, trend) and produces a figure of a map for each ensemble member. A coloured number on top of each map indicates the belonging cluster.
+
 ### Output
 The ens_anom.py module provides three NetCDF files of dimension (N, lat, lon) that are the maps of climatology, selected value and anomaly for the N members. A vector of N cluster labels, the most representative ensemble member for each cluster and statistics of clusters are saved in text files by the ens_eof_kmeans.py module. Specifically, the file containing statistcs of clusters includes, for each cluster, the Euclidean distances in PC space between the members belonging to that cluster and the cluster centroid, the maximum and minimum distances, the standard deviation of intra-cluster distances and the frequency of that cluster.
 

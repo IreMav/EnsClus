@@ -34,6 +34,9 @@ perc=80                         #cluster analysis is applied on a number of PCs 
                                 #'perc' of total variance
 numpcs=no                       #number of PCs
 
+#---------------------about plots------------------------------------------------------
+field_to_plot='anomalies'     #field to plot ('climatologies', 'anomalies', '75th_percentile', 'mean', 'maximum', 'std', 'trend')
+
 name_outputs="${varname}_${model}_${numens}ens_${season}_${area}_${kind}"
 
 ##PRECOMPUTATION
@@ -46,6 +49,9 @@ python ${CLUSTOOL_PATH}ens_anom.py "$filenames" "$OUTPUT_PATH" "$name_outputs" "
 
 ##ENSEMBLE EOF and K-MEANS
 python ${CLUSTOOL_PATH}ens_eof_kmeans.py "$OUTPUT_PATH" "$name_outputs" "$numens" "$numpcs" "$perc" "$numclus"
+
+##PLOT AND SAVE FIGURES
+python ${CLUSTOOL_PATH}ens_plots.py "$OUTPUT_PATH" "$name_outputs" "$numclus" "$field_to_plot"
 
 ls -lrt ../OUTPUT
 

@@ -20,7 +20,7 @@ def ens_anom(filenames,dir_OUTPUT,name_outputs,varname,numens,season,area,extrem
     from sel_season_area import sel_season, sel_area
 
     print('***********************************OUTPUT***********************************')
-    print('The name of the output files will be <variable>_{0}.ext'.format(name_outputs))
+    print('The name of the output files will be <variable>_{0}.txt'.format(name_outputs))
     print('Number of ensemble members: {0}'.format(numens))
     # OUTPUT DIRECTORY
     OUTPUTdir=dir_OUTPUT+'OUTPUT/'

@@ -39,6 +39,7 @@ dir_CLUStool='/home/mavilia/MAGIC/EnsClus/clus/'
 sys.path.insert(0,dir_CLUStool)
 from ens_anom import ens_anom
 from ens_eof_kmeans import ens_eof_kmeans
+from ens_plots import ens_plots
 
 #-------------------------------about data-------------------------------------------
 # Write only letters or numbers, no punctuation marks!
@@ -62,6 +63,9 @@ numclus=6              #number of clusters
 perc=80                #cluster analysis is applied on a number of PCs such as they explain
                        #'perc' of total variance
 numpcs='no'            #number of PCs
+
+#---------------------about plots------------------------------------------------------
+field_to_plot='anomalies'     #field to plot ('climatologies', 'anomalies', '75th_percentile', 'mean', 'maximum', 'std', 'trend')
 
 #____________Building the name of output files
 s = "_";
@@ -100,13 +104,18 @@ for i in filenames:
     print(i)
 print('_____________________________\n')
 
-####################### PRECOMPUTATION #######################
+####################### PRECOMPUTATION #######################################
 #____________run ens_anom as a module
 ens_anom(filenames,dir_OUTPUT,name_outputs,varname,numens,season,area,extreme)
 
-####################### EOF AND K-MEANS ANALYSES #######################
+####################### EOF AND K-MEANS ANALYSES #############################
 #____________run ens_eof_kmeans as a module
 ens_eof_kmeans(dir_OUTPUT,name_outputs,numens,numpcs,perc,numclus)
+
+####################### PLOT AND SAVE FIGURES ################################
+#____________run ens_plots as a module
+ens_plots(dir_OUTPUT,name_outputs,numclus,field_to_plot)
+
 
 print('\n>>>>>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<\n')
 
